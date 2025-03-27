@@ -69,10 +69,10 @@ router.post('/login', async (req, res) => {
     const loginAs = req.body.loginAs
     // console.log(loginAs, "MY LOGIN ASSSS")
     let user = {}
-      user = await User.findOne({ email });
-      // user.isFaculty = true
+    user = await User.findOne({ email });
+    // user.isFaculty = true
 
-    
+
     if (!user) {
       res.status(400);
       res.send('User not found');
@@ -115,25 +115,26 @@ router.delete('/:id', async (req, res) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const { email, } = req.body;
+    const { email, password } = req.body;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ message: 'Username already exists' });
+      return res.status(409).json({ message: 'Email already exists' });
       // console.log("Hai user")
     }
 
-    const password = "111111"
+    // const password = "111111"
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log(hashedPassword, "M<y passs")
     const newUser = new User(req.body);
     newUser.password = hashedPassword
+    newUser.admin = false
     await newUser.save();
     var mailOptions = {
       from: "umangsomani7@gmail.com",
       // to: `work.soumil@gmail.com`,
       to: `${req.body.email}`,
-      subject: `Welcome to the KJ SIT ${req.body.name} `,
-      html: `Your password 111111`,
+      subject: `Welcome to the Eventify ${req.body.name} `,
+      html: `Enjoy your visit to the website`,
     };
     transporter.sendMail(mailOptions, async function (error, info) {
       if (error) {
