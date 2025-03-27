@@ -20,6 +20,7 @@ const serveIndex = require("serve-index");
 
 let allowedOrigins = [
   "http://localhost:3000",
+  "https://eventify-frontend-rho.vercel.app/"
 ];
 
 app.use(
