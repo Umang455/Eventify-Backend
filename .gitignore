@@ -1,0 +1,8 @@
+**/node_modules
+.env
+.prod.env
+.idea
+.DS_Store
+public/uploads
+package-lock.json
+yarn.lock
