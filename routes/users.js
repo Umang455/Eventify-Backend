@@ -27,6 +27,21 @@ router.get('/', async (req, res) => {
     console.log(e)
   }
 })
+router.get('/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+
+    res.status(200).send(user);
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: 'Something went wrong' });
+  }
+});
+
 
 router.post('/', async (req, res) => {
   try {
@@ -115,28 +130,57 @@ router.delete('/:id', async (req, res) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name, phone, address, role } = req.body;
+
+    // Validate required fields
+    if (!email || !password || !name || !phone || !address || !role) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Check if email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: 'Email already exists' });
-      // console.log("Hai user")
     }
 
-    // const password = "111111"
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(hashedPassword, "M<y passs")
-    const newUser = new User(req.body);
-    newUser.password = hashedPassword
-    newUser.admin = false
+
+    // Create new user
+    const newUser = new User({
+      email,
+      password: hashedPassword,
+      name,
+      phone,
+      address,
+      role,
+      isAdmin: role === 'Admin',
+      status: 'Active'
+    });
+
     await newUser.save();
+
+    // Send welcome email
     var mailOptions = {
       from: "umangsomani7@gmail.com",
-      // to: `work.soumil@gmail.com`,
-      to: `${req.body.email}`,
-      subject: `Welcome to the Eventify ${req.body.name} `,
-      html: `Enjoy your visit to the website`,
+      to: email,
+      subject: `Welcome to Eventify ${name}`,
+      html: `
+        <h1>Welcome to Eventify!</h1>
+        <p>Dear ${name},</p>
+        <p>Thank you for registering with Eventify. We're excited to have you on board!</p>
+        <p>Your account has been created successfully with the following details:</p>
+        <ul>
+          <li>Name: ${name}</li>
+          <li>Email: ${email}</li>
+          <li>Role: ${role}</li>
+        </ul>
+        <p>You can now log in to your account and start managing events.</p>
+        <p>Best regards,<br>The Eventify Team</p>
+      `,
     };
-    transporter.sendMail(mailOptions, async function (error, info) {
+
+    transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log(error);
       } else {
@@ -144,10 +188,11 @@ router.post('/register', async (req, res) => {
       }
     });
 
-    res.status(201).send(newUser);
+    res.status(201).json(newUser);
   } catch (e) {
-    console.log(e)
+    console.log(e);
+    res.status(500).json({ message: 'Internal server error' });
   }
-})
+});
 
 module.exports = router;

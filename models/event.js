@@ -13,12 +13,14 @@ const eventSchema = new mongoose.Schema({
     eventDuration: { type: String },
     venue: { type: String },
     theme: { type: String },
+    askedBudget: { type: String },
     budget: { type: String },
     activities: { type: String },
     decoration: { type: String },
-    registeredUsers: { type: Array },
-    createdBy: { type: String },
-    createdById: { type: String },
+    bannerImage: { type: String },
+    registeredUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
+    savedSchedule: { type: String }
 }, { timestamps: true });
 
 // Create Event model

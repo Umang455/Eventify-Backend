@@ -4,6 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const cors = require("cors");
+const mongoose = require('mongoose');
 
 require("./db");
 
@@ -48,6 +49,9 @@ app.use("/students", studentRouter);
 app.use("/activities", activityRouter);
 app.use("/events", eventRouter);
 
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
@@ -61,6 +65,19 @@ app.use(function (err, req, res, next) {
   // Render the error page
   res.status(err.status || 500);
   res.render("error");
+});
+
+// Database connection
+// mongoose.connect('mongodb://localhost:27017/eventify', {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// })
+//   .then(() => console.log('Connected to MongoDB'))
+//   .catch(err => console.error('Could not connect to MongoDB', err));
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 module.exports = app;

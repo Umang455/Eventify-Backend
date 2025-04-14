@@ -2,15 +2,15 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 const userSchema = new Schema({
-    name: String,
-    email: String,
-    password: String,
-    phone: String,
-    address: String,
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
     designations: [String],
-    status: { type: String, enum: ['Inactive', 'Active'] },
-    role: String,
-    isAdmin: Boolean,
+    status: { type: String, enum: ['Inactive', 'Active'], default: 'Active' },
+    role: { type: String, enum: ['User', 'EventHead', 'Admin'], default: 'User' },
+    isAdmin: { type: Boolean, default: false },
     registeredEvents: Array,
     // isFaculty: { type: Boolean, default: true },
 }, {
