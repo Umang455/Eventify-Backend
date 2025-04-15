@@ -36,23 +36,182 @@ let transporter = nodemailer.createTransport({
 });
 const sendEmail = (to, subject, event) => {
     const invitationHtml = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background: #f9f9f9;">
-            <h1 style="color: #333; text-align: center;">You're Invited!</h1>
-            <p style="color: #555; text-align: center;">Join us for an unforgettable event:</p>
-            <div style="background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
-                <h2 style="color: #007bff; margin: 0;">${event.eventName}</h2>
-                <p style="color: #333;"><strong>Location:</strong> ${event.location}</p>
-                <p style="color: #333;"><strong>Date:</strong> ${new Date(event.eventTime).toLocaleString()}</p>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+                
+                body {
+                    font-family: 'Poppins', sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f5f5f5;
+                }
+                
+                .container {
+                    max-width: 600px;
+                    margin: 20px auto;
+                    background: #ffffff;
+                    border-radius: 15px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                }
+                
+                .header {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    padding: 30px;
+                    text-align: center;
+                    color: white;
+                }
+                
+                .header h1 {
+                    margin: 0;
+                    font-size: 28px;
+                    font-weight: 600;
+                    animation: fadeInDown 1s ease;
+                }
+                
+                .content {
+                    padding: 30px;
+                }
+                
+                .event-card {
+                    background: #fff;
+                    border-radius: 10px;
+                    padding: 20px;
+                    margin: 20px 0;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                    animation: slideInUp 1s ease;
+                }
+                
+                .event-title {
+                    color: #2c3e50;
+                    font-size: 24px;
+                    font-weight: 600;
+                    margin-bottom: 15px;
+                }
+                
+                .event-details {
+                    color: #34495e;
+                    margin: 10px 0;
+                }
+                
+                .event-details strong {
+                    color: #2c3e50;
+                }
+                
+                .cta-button {
+                    display: inline-block;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    text-decoration: none;
+                    padding: 12px 30px;
+                    border-radius: 25px;
+                    font-weight: 500;
+                    margin-top: 20px;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                
+                .cta-button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+                }
+                
+                .footer {
+                    text-align: center;
+                    padding: 20px;
+                    color: #7f8c8d;
+                    font-size: 14px;
+                }
+                
+                @keyframes fadeInDown {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                @keyframes slideInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                .event-image {
+                    width: 100%;
+                    height: 200px;
+                    object-fit: cover;
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+                }
+                
+                .countdown {
+                    background: #f8f9fa;
+                    padding: 15px;
+                    border-radius: 10px;
+                    text-align: center;
+                    margin: 20px 0;
+                    animation: pulse 2s infinite;
+                }
+                
+                @keyframes pulse {
+                    0% {
+                        transform: scale(1);
+                    }
+                    50% {
+                        transform: scale(1.02);
+                    }
+                    100% {
+                        transform: scale(1);
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>You're Invited!</h1>
+                </div>
+                <div class="content">
+                    <div class="event-card">
+                        <h2 class="event-title">${event.eventName}</h2>
+                        <div class="event-details">
+                            <p><strong>📍 Location:</strong> ${event.venue}</p>
+                            <p><strong>📅 Date:</strong> ${new Date(event.eventTime).toLocaleDateString()}</p>
+                            <p><strong>⏰ Time:</strong> ${new Date(event.eventTime).toLocaleTimeString()}</p>
+                            ${event.description ? `<p><strong>📝 Description:</strong> ${event.description}</p>` : ''}
+                        </div>
+                        <div class="countdown">
+                            <p>🎉 Don't miss out on this exciting event!</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <a href="https://eventify-frontend-rho.vercel.app/events" class="cta-button">RSVP Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <p>We look forward to seeing you there!</p>
+                    <p>Best regards,<br>The Eventify Team</p>
+                </div>
             </div>
-            <p style="color: #555; margin-top: 20px; text-align: center;">We look forward to seeing you there!</p>
-            <div style="text-align: center; margin-top: 20px;">
-                <a href="https://eventify-frontend-rho.vercel.app/events" style="background: #007bff; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 5px; display: inline-block; font-weight: bold;">RSVP Now</a>
-            </div>
-        </div>
+        </body>
+        </html>
     `;
 
     const mailOptions = {
-        from: 'youremail@gmail.com',
+        from: 'umang.duss@gmail.com',
         to,
         subject,
         html: invitationHtml,
@@ -79,7 +238,6 @@ const storage = multer.diskStorage({
         cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
     }
 });
-
 const upload = multer({
     storage: storage,
     limits: {

@@ -2,11 +2,27 @@ const express = require('express');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const Student = require('../models/student');
-
+const multer = require('multer');
+const path = require('path');
 const jwt = require('jsonwebtoken');
 const { transporter } = require('../email/nodemailer');
+const upload = require('../middleware/upload');
+// const { upload } = require('../middleware/upload');
+// const { upload } = require('./events');
 
 const router = new express.Router();
+
+// Configure multer for file upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/profile/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
 
 router.get('/', async (req, res) => {
   try {
@@ -192,6 +208,35 @@ router.post('/register', async (req, res) => {
   } catch (e) {
     console.log(e);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Update user profile with image upload
+router.patch('/profile/:id', upload.single('profilePicture'), async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+    console.log(req.body, "my body")
+    // Update basic fields
+    const updates = Object.keys(req.body);
+    updates.forEach((update) => {
+      if (update !== 'profilePicture') {
+        user[update] = req.body[update];
+      }
+    });
+
+    // If a new profile image was uploaded
+    if (req.file) {
+      user.profilePicture = req.file.path;
+    }
+
+    await user.save();
+    res.status(200).send(user);
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: 'Something went wrong' });
   }
 });
 

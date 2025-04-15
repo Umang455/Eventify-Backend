@@ -12,7 +12,18 @@ const userSchema = new Schema({
     role: { type: String, enum: ['User', 'EventHead', 'Admin'], default: 'User' },
     isAdmin: { type: Boolean, default: false },
     registeredEvents: Array,
-    // isFaculty: { type: Boolean, default: true },
+    bio: { type: String, default: '' },
+    interests: [{ type: String }],
+    profilePicture: { type: String, default: '' },
+    gender: { type: String, enum: ['Male', 'Female', 'Other', 'Prefer not to say'], default: 'Prefer not to say' },
+    dateOfBirth: { type: Date },
+    preferences: {
+        eventTypes: [{ type: String }],
+        notificationSettings: {
+            email: { type: Boolean, default: true },
+            push: { type: Boolean, default: true }
+        }
+    }
 }, {
     timestamps: true,
 }

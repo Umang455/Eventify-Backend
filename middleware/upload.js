@@ -4,17 +4,24 @@ const path = require('path');
 
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/uploads'); // Destination folder for uploaded images
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/events');
     },
-    filename: (req, file, cb) => {
-        console.log(file, "My file name")
-        const extension = path.extname(file.originalname);
+    filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.originalname); // Set unique filenames
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
     }
 });
-
-// Create the multer middleware
-const upload = multer({ storage: storage });
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: function (req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+    }
+});
 module.exports = upload;
